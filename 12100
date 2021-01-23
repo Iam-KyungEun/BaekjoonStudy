@@ -1,0 +1,146 @@
+// 2048(Easy)
+#include <stdio.h>
+#include <string.h>
+
+const int MAX = 21;
+
+int arr[MAX][MAX];
+int original[MAX][MAX];
+bool flag[MAX][MAX];
+int result[6];
+int maxval;
+int N;
+int total_max;
+
+void move();
+void makeoriginal();
+void getResult(int idx){
+	if(idx>=5){
+		move();
+	}
+	else{
+		for(int i=1;i<5;i++){
+			result[idx]=i;
+			getResult(idx+1);
+		}
+	}
+}
+
+void move(){
+	int last=0;
+	maxval=0;
+	for(int k=0;k<5;k++){
+		if(result[k]==1){ //up
+			last=0;
+			for(int j=0;j<N;j++){
+				last=0;
+				for(int i=0;i<N;i++){
+					if(arr[i][j]>0){
+						if(flag[last-1][j]==false && last>0 && arr[last-1][j]==arr[i][j]){
+							arr[last-1][j]+=arr[i][j];
+							flag[last-1][j]=true;
+							arr[i][j]=0;
+							last--;
+						}
+						else {
+							arr[last][j]=arr[i][j];
+						}
+						if(last!=i) arr[i][j]=0;
+						last++;
+						if(arr[last-1][j]>maxval) maxval=arr[last-1][j];
+					}
+				}
+			}
+		}
+		else if(result[k]==2){ //down
+			for(int j=0;j<N;j++){
+				last=N-1;
+				for(int i=N-1;i>=0;i--){
+					if(arr[i][j]>0){
+						if(flag[last+1][j]==false && last<N-1 && arr[last+1][j]==arr[i][j]){
+							arr[last+1][j]+=arr[i][j];
+							flag[last+1][j]=true;
+							arr[i][j]=0;
+							last++;
+						}
+						else {
+							arr[last][j]=arr[i][j];
+						}
+						if(last!=i) arr[i][j]=0;
+						last--;
+						if(arr[last+1][j]>maxval) maxval=arr[last+1][j];
+					}
+				}
+			}
+		}
+		else if(result[k]==3){ //left
+			for(int i=0;i<N;i++){
+				last=0;
+				for(int j=0;j<N;j++){
+					if(arr[i][j]>0){
+						if(flag[i][last-1]==false && last>0 && arr[i][last-1]==arr[i][j]){
+							arr[i][last-1]+=arr[i][j];
+							flag[i][last-1]=true;
+							arr[i][j]=0;
+							last--;
+						}
+						else {
+							arr[i][last]=arr[i][j];
+						}
+						if(last!=j) arr[i][j]=0;
+						last++;
+						if(arr[i][last-1]>maxval) maxval=arr[i][last-1];
+					}
+				}
+			}
+		}
+		else if(result[k]==4){ //right
+			for(int i=0;i<N;i++){
+				last=N-1;
+				for(int j=N-1;j>=0;j--){
+					if(arr[i][j]>0){
+						if(flag[i][last+1]==false && last<N-1 && arr[i][last+1]==arr[i][j]){
+							arr[i][last+1]+=arr[i][j];
+							flag[i][last+1]=true;
+							arr[i][j]=0;
+							last++;
+						}
+						else {
+							arr[i][last]=arr[i][j];
+						}
+						if(last!=j) arr[i][j]=0;
+						last--;
+						if(arr[i][last+1]>maxval) maxval=arr[i][last+1];
+					}
+				}
+			}
+		}
+		memset(flag,0,sizeof(flag));
+	}
+	if(maxval>total_max) total_max=maxval;
+	makeoriginal();
+}
+
+void makeoriginal(){
+	for(int i=0;i<N;i++){
+		for(int j=0;j<N;j++){
+			arr[i][j]=original[i][j];
+		}
+	}
+}
+int main(){
+	
+	scanf("%d",&N);
+	for(int i=0;i<N;i++){
+		for(int j=0;j<N;j++){
+			scanf("%d",&arr[i][j]);
+			original[i][j]=arr[i][j];
+		}
+	}
+	
+	getResult(0);
+
+	move();
+	printf("%d",total_max);
+	return 0;
+}
