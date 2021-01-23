@@ -1,0 +1,71 @@
+// 뱀
+#include <stdio.h>
+
+const int MAX = 105;
+bool check[MAX][MAX];
+int arr[MAX][MAX];
+int K,L;
+int changetime[101];
+char changedir[101];
+int dy[4]={-1,1,0,0};
+int dx[4]={0,0,-1,1};
+int LeftDir[4]={2,3,1,0};
+int RightDir[4]={3,2,0,1};
+int lastY,lastX,dir;
+int snakeY[101];
+int snakeX[101];
+
+int main(){
+	int N;
+	scanf("%d",&N);
+	scanf("%d",&K);
+	for(int k=1;k<=K;k++) {
+		int i,j;
+		scanf("%d %d",&i,&j);
+		arr[i][j]=1;	
+	}
+	scanf("%d",&L);
+	for(int l=0;l<L;l++){
+		scanf("%d %c",&changetime[l],&changedir[l]);
+	}
+	if(changedir[0]=='D') dir=3;
+	else dir=1;
+	
+	int head=0,tail=0,time=0,cnt=0;
+	snakeY[head]=1;
+	snakeX[head]=1;
+	while(1){
+		time++;
+		int ny=snakeY[head]+dy[dir];
+		int nx=snakeX[head]+dx[dir];
+		if(check[ny][nx] || ny>N || nx>N || ny<=0 || nx<=0) 	break;
+		
+		if(!check[ny][nx]) {
+			check[ny][nx]=true;
+			head++;
+			if(head>100) head=0;	
+			snakeY[head]=ny;
+			snakeX[head]=nx;
+		}
+		if(arr[ny][nx]==0){
+			//꼬리 업데이트 
+			check[snakeY[tail]][snakeX[tail]]=false;
+			tail++;
+			if(tail>100) tail=0;
+		}
+		else arr[ny][nx]=0;
+		
+		if(time==changetime[cnt]){
+			if(changedir[cnt]=='D'){
+				dir=RightDir[dir];
+			}
+			else if(changedir[cnt]=='L'){
+				dir=LeftDir[dir];
+			}
+			cnt++;
+		}
+	}
+	printf("%d",time);
+	
+	return 0;
+}
